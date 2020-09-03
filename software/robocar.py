@@ -35,6 +35,32 @@ class RoboCar:
         print("Sending speeds:", data)
         self._ser.write(b':' + bytes(data) + b'\n')
 
+    def forwards(self, speed: float):
+        self.right_speed = speed
+        self.left_speed = speed
+        self.send_speeds()
+
+    def backwards(self, speed: float):
+        self.right_speed = -speed
+        self.left_speed = -speed
+        self.send_speeds()
+
+    def left(self, speed: float, strength: float):
+        # right_speed < left_speed
+        self.right_speed = -strength * speed
+        self.left_speed = strength * speed
+        self.send_speeds()
+
+    def right(self, speed: float, strength: float):
+        self.right_speed = strength * speed
+        self.left_speed = -strength * speed
+        self.send_speeds()
+
+    def stop(self):
+        self.right_speed = 0
+        self.left_speed = 0
+        self.send_speeds()
+
     def run(self):
         while True:
             pass

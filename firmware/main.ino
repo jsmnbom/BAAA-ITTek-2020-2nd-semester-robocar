@@ -2,7 +2,7 @@
 #include <VL53L1X.h>
 
 #define PIN_MOTORA_IN1 11 //5
-#define PIN_MOTORA_IN2 10 //6
+#define PIN_MOTORA_IN2 6 //6
 #define PIN_MOTORB_IN1 5 //10
 #define PIN_MOTORB_IN2 3 //11
 
@@ -53,6 +53,16 @@ void setup()
 // WHERE - IS - MY - SUPERLOOP
 void loop()
 {
+    // digitalWrite(PIN_MOTORA_IN1, HIGH);
+    // digitalWrite(PIN_MOTORA_IN2, LOW);
+    // delay(2000);
+    // digitalWrite(PIN_MOTORA_IN1, LOW);
+    // digitalWrite(PIN_MOTORA_IN2, HIGH);
+    // delay(2000);
+    // digitalWrite(PIN_MOTORA_IN1, LOW);
+    // digitalWrite(PIN_MOTORA_IN2, LOW);
+    // delay(2000);
+    // while(1);
     // If we have a complete command
     if (inComplete) {
         // Extract speeds

@@ -8,17 +8,11 @@ def main():
         car = RoboCar(ser)
         
         sleep(2)
-        car.left_speed = -0.01
-        car.right_speed = -0.01
-        car.send_speeds()
-        sleep(2)
-        car.left_speed = 0.01
-        car.right_speed = 0.01
-        car.send_speeds()
-        sleep(2)
-        car.left_speed = 0.0
-        car.right_speed = 0.0
-        car.send_speeds()
+        car.forwards(1.0)
+        sleep(1)
+        car.right(1.0, 1.0)
+        sleep(5)
+        car.stop()
 
 
 if __name__ == '__main__':
