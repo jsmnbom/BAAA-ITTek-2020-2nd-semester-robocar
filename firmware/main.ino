@@ -1,10 +1,10 @@
 #include <Wire.h>
 #include <VL53L1X.h>
 
-#define PIN_MOTORA_IN1 5
-#define PIN_MOTORA_IN2 6
-#define PIN_MOTORB_IN1 10
-#define PIN_MOTORB_IN2 11
+#define PIN_MOTORA_IN1 11 //5
+#define PIN_MOTORA_IN2 10 //6
+#define PIN_MOTORB_IN1 5 //10
+#define PIN_MOTORB_IN2 3 //11
 
 #define SERIAL_BAUDRATE 115200
 #define I2C_CLOCK 400000
@@ -67,8 +67,14 @@ void loop()
         // analogWrite(PIN_MOTORX_IN2, x);
         // for x between 0-255
 
+        Serial.print("Left: ");
+        Serial.print(inLeft);
+        Serial.print("  right: ");
+        Serial.println(inRight);
+        
+
         setSpeed(PIN_MOTORA_IN1, PIN_MOTORA_IN2, inLeft);
-        setSpeed(PIN_MOTORB_IN1, PIN_MOTORB_IN2, inRight);
+        setSpeed(PIN_MOTORB_IN2, PIN_MOTORB_IN1, inRight);
 
         // Clear out our command
         inputBuffer = "";
@@ -103,10 +109,10 @@ void setSpeed(byte pinIn1, byte pinIn2, byte inByte) {
         analogWrite(pinIn1, 0);
         analogWrite(pinIn2, 0);
     } else if (inByte < 128) {
-        analogWrite(pinIn1, 0);
-        analogWrite(pinIn2, map(inByte, 128, 0, 0, 255));
+        digitalWrite(pinIn1, LOW);
+        analogWrite(pinIn2, map(inByte, 128, 0, 80, 255));
     } else if (inByte > 128) {
-        analogWrite(pinIn1, map(inByte, 128, 255, 0, 255));
-        analogWrite(pinIn2, 0);
+        analogWrite(pinIn1, map(inByte, 128, 255, 80, 255));
+        digitalWrite(pinIn2, LOW);
     }
 }

@@ -21,6 +21,13 @@ class RoboCar:
         self.right_speed = 0.0
 
     def send_speeds(self):
+        # if self.left_speed == 0.0:
+        #     left_speed = 0
+        # elif self.left_speed > 0.0:
+        #     left_speed = max(self.left_speed, 0.01)
+        # elif self.left_speed < 0.0:
+        #     left_speed = min(self.left_speed, -0.01)
+
         data = [
             calc_speed(self.left_speed),
             calc_speed(self.right_speed)

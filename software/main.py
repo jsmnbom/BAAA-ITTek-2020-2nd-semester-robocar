@@ -8,28 +8,16 @@ def main():
         car = RoboCar(ser)
         
         sleep(2)
-        car.left_speed = 1.0
-        car.right_speed = 0.0
+        car.left_speed = -0.01
+        car.right_speed = -0.01
         car.send_speeds()
         sleep(2)
-        car.left_speed = -1.0
-        car.right_speed = 0.0
-        car.send_speeds()
-        sleep(2)
-        car.left_speed = 0.0
-        car.right_speed = 1.0
+        car.left_speed = 0.01
+        car.right_speed = 0.01
         car.send_speeds()
         sleep(2)
         car.left_speed = 0.0
-        car.right_speed = -1.0
-        car.send_speeds()
-        sleep(2)
-        car.left_speed = 0.2
-        car.right_speed = 0.2
-        car.send_speeds()
-        sleep(2)
-        car.left_speed = 1.0
-        car.right_speed = -0.2
+        car.right_speed = 0.0
         car.send_speeds()
 
 
