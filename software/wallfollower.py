@@ -1,4 +1,5 @@
 import serial
+from time import sleep
 from robocar import RoboCar
 
 class WallFollower(RoboCar):
@@ -7,6 +8,8 @@ class WallFollower(RoboCar):
 
         self.thresholds = [250, 300]
         self.aggresiveness = 1.0
+
+        self.config_sensor(30, 90, 10)
 
     def run(self):
         while True:
@@ -18,15 +21,17 @@ class WallFollower(RoboCar):
                 if data < self.thresholds[0]:
                     error = self.thresholds[0] - data
                 if data > self.thresholds[1]:
-                    error = -data - self.thresholds[0]
+                    error = self.thresholds[1] - data
 
                 print('data', data, 'error', error)
 
                 # if error > 0: move more right
                 # if error < 0: move more left
                 if error > 0:
-                    self.right(0.5, 0.0001 * error)
+                    self.right(0.5, 0.001 * error)
                 elif error < 0:
-                    self.left(0.5, 0.0001 * error)
+                    self.left(0.5, -0.001 * error)
                 else:
-                    self.forwards(0.5)
+                    self.forwards(1.0)
+
+            sleep(0.01)

@@ -22,7 +22,9 @@ int pos = 90;
 // True = Right
 // False = Left     
 bool direction = true;
-int interval = 4;
+byte step = 4;
+byte minPos = 30;
+byte maxPos = 150;
 
 unsigned long lastReceived = 0;
 
@@ -78,22 +80,28 @@ void loop()
 
     // If we have a complete command
     if (inComplete) {
-        // Extract speesds
-        byte inLeft = (byte)inputBuffer.charAt(0);
-        byte inRight = (byte)inputBuffer.charAt(1);
+        switch(inputBuffer.charAt(0)) {
+            case 'd': {
+                // Extract speeds
+                byte inLeft = (byte)inputBuffer.charAt(1);
+                byte inRight = (byte)inputBuffer.charAt(2);
 
-        // Forwards
-        // analogWrite(PIN_MOTORX_IN1, x);
-        // analogWrite(PIN_MOTORX_IN2, 0);
-        // Backwards
-        // analogWrite(PIN_MOTORX_IN1, 0);
-        // analogWrite(PIN_MOTORX_IN2, x);
-        // for x between 0-255
+                setSpeed(PIN_MOTORA_IN1, PIN_MOTORA_IN2, inLeft);
+                setSpeed(PIN_MOTORB_IN2, PIN_MOTORB_IN1, inRight);
+            } break;
+            case 's': {
+                byte inMinPos = (byte)inputBuffer.charAt(1);
+                byte inMaxPos = (byte)inputBuffer.charAt(2);
+                byte inStep = (byte)inputBuffer.charAt(3);
 
-        
+                minPos = inMinPos;
+                maxPos = inMaxPos;
+                step = inStep;
 
-        setSpeed(PIN_MOTORA_IN1, PIN_MOTORA_IN2, inLeft);
-        setSpeed(PIN_MOTORB_IN2, PIN_MOTORB_IN1, inRight);
+                pos = (minPos + maxPos) / 2;
+                myservo.write(pos);
+            }
+        }
 
         // Clear out our command
         inputBuffer = "";
@@ -135,15 +143,15 @@ void loop()
         // Serial.print(second);
         Serial.write('\n');
 
-        if(pos <= 30 || pos >= 150){
+        if(pos <= minPos || pos >= maxPos){
             direction = !direction;
         }
         if (direction) {
-            pos += interval;
+            pos += step;
         } else {
-            pos -= interval;
+            pos -= step;
         }
-        pos = constrain(pos, 30, 150);
+        pos = constrain(pos, minPos, maxPos);
 
         myservo.write(pos);
         // Serial.print("Left: ");

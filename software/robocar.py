@@ -1,6 +1,5 @@
 from struct import unpack
 import serial
-import turtle
 
 
 def calc_speed(speed: float):
@@ -40,7 +39,10 @@ class RoboCar:
             calc_speed(clamp(self.right_speed, 0.0, 1.0))
         ]
         print("Sending speeds:", data)
-        self._ser.write(b':' + bytes(data) + b'\n')
+        self._ser.write(b':d' + bytes(data) + b'\n')
+
+    def config_sensor(self, min_pos, max_pos, step):
+        self._ser.write(b':s' + bytes([min_pos, max_pos, step]) + b'\n')
 
     def forwards(self, speed: float):
         self.right_speed = speed
@@ -54,13 +56,20 @@ class RoboCar:
 
     def left(self, speed: float, strength: float):
         # right_speed < left_speed
-        self.right_speed = -strength * speed
-        self.left_speed = strength * speed
+        self.right_speed = clamp(speed, 0.0, 1.0) / 2.0 - clamp(strength, 0.0, 1.0) / 2.0 
+        self.left_speed = clamp(speed, 0.0, 1.0) / 2.0 + clamp(strength, 0.0, 1.0) / 2.0 
+        # self.right_speed = strength
+        # self.left_speed = -strength
+
+        # self.right_speed = -clamp(strength, 0.0, 1.0) * clamp(speed, 0.0, 1.0)
+        # self.left_speed = clamp(strength, 0.0, 1.0) * clamp(speed, 0.0, 1.0)
         self.send_speeds()
 
     def right(self, speed: float, strength: float):
-        self.right_speed = strength * speed
-        self.left_speed = -strength * speed
+        self.right_speed = clamp(speed, 0.0, 1.0) / 2.0 - clamp(strength, 0.0, 1.0) / 2.0 
+        self.left_speed = clamp(speed, 0.0, 1.0) / 2.0 + clamp(strength, 0.0, 1.0) / 2.0 
+        # self.right_speed = clamp(strength, 0.0, 1.0) * clamp(speed, 0.0, 1.0)
+        # self.left_speed = -clamp(strength, 0.0, 1.0) * clamp(speed, 0.0, 1.0)
         self.send_speeds()
 
     def stop(self):
