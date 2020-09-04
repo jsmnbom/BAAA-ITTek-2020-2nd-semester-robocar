@@ -1,4 +1,6 @@
+from struct import unpack
 import serial
+import turtle
 
 
 def calc_speed(speed: float):
@@ -15,6 +17,10 @@ def calc_speed(speed: float):
 class RoboCar:
     def __init__(self, ser: serial.Serial):
         self._ser = ser
+        self._buffer = bytes()
+        self._buffer_ready = False
+
+        self.sensor_data = {}
 
         # Between -1.0 and 1.0
         self.left_speed = 0.0
@@ -27,10 +33,11 @@ class RoboCar:
         #     left_speed = max(self.left_speed, 0.01)
         # elif self.left_speed < 0.0:
         #     left_speed = min(self.left_speed, -0.01)
-
+        print('Speeds: ', self.left_speed, self.right_speed)
+        
         data = [
-            calc_speed(self.left_speed),
-            calc_speed(self.right_speed)
+            calc_speed(clamp(self.left_speed, 0.0, 1.0)),
+            calc_speed(clamp(self.right_speed, 0.0, 1.0))
         ]
         print("Sending speeds:", data)
         self._ser.write(b':' + bytes(data) + b'\n')
@@ -61,9 +68,21 @@ class RoboCar:
         self.left_speed = 0
         self.send_speeds()
 
-    def run(self):
-        while True:
-            pass
-            # read sensor data
-            # Send speeds
-            self.send_speeds()
+    def read_sensors(self):
+        while self._ser.in_waiting > 0:
+            if len(self._buffer) < 5:
+                data = self._ser.read(1)
+                if data == b':':
+                    self._buffer_ready = True
+                if self._buffer_ready:
+                    self._buffer += data
+            
+            if len(self._buffer) == 5:       
+                pos, distance = unpack('xBHx', self._buffer)
+                self._buffer = bytes()
+                self._buffer_ready = False
+                self.sensor_data[pos] = distance
+
+            
+def clamp(val, min_val, max_val):
+    return max(min(val, max_val), min_val)

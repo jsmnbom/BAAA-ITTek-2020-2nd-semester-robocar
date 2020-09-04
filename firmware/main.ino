@@ -1,3 +1,4 @@
+#include <Servo.h>
 #include <Wire.h>
 #include <VL53L1X.h>
 
@@ -10,9 +11,20 @@
 #define I2C_CLOCK 400000
 
 VL53L1X sensor;
+
+// Communication
 String inputBuffer = "";
 bool inBegin = false;
 bool inComplete = false;
+
+Servo myservo;
+int pos = 90;
+// True = Right
+// False = Left     
+bool direction = true;
+int interval = 4;
+
+unsigned long lastReceived = 0;
 
 void setup()
 {
@@ -25,8 +37,6 @@ void setup()
     /* Setup commmunication */
     Serial.begin(SERIAL_BAUDRATE);
 
-// Remove for now since we can't test the sensor yet
-#if (false)
     Wire.begin();
     Wire.setClock(I2C_CLOCK);
 
@@ -45,7 +55,8 @@ void setup()
 
     // Start sensor, read every 50ms
     sensor.startContinuous(50);
-#endif
+
+    myservo.attach(9);
 }
 
 // Honey?
@@ -53,19 +64,21 @@ void setup()
 // WHERE - IS - MY - SUPERLOOP
 void loop()
 {
-    // digitalWrite(PIN_MOTORA_IN1, HIGH);
+    unsigned long now = millis();
+    // digitalWrite(PsIN_MOTORA_IN1, HIGH);
     // digitalWrite(PIN_MOTORA_IN2, LOW);
     // delay(2000);
     // digitalWrite(PIN_MOTORA_IN1, LOW);
     // digitalWrite(PIN_MOTORA_IN2, HIGH);
     // delay(2000);
     // digitalWrite(PIN_MOTORA_IN1, LOW);
-    // digitalWrite(PIN_MOTORA_IN2, LOW);
+    // digitalWrite(PIN_MOhttps://prod.liveshare.vsengsaas.visualstudio.com/join?0C888621D787C1CDA324240769E2AF72F4A5TORA_IN2, LOW);
     // delay(2000);
     // while(1);
+
     // If we have a complete command
     if (inComplete) {
-        // Extract speeds
+        // Extract speesds
         byte inLeft = (byte)inputBuffer.charAt(0);
         byte inRight = (byte)inputBuffer.charAt(1);
 
@@ -77,10 +90,6 @@ void loop()
         // analogWrite(PIN_MOTORX_IN2, x);
         // for x between 0-255
 
-        Serial.print("Left: ");
-        Serial.print(inLeft);
-        Serial.print("  right: ");
-        Serial.println(inRight);
         
 
         setSpeed(PIN_MOTORA_IN1, PIN_MOTORA_IN2, inLeft);
@@ -106,10 +115,51 @@ void loop()
         if (inBegin) {
             inputBuffer += inChar;
         }
+        lastReceived = now;
+    }
+
+    if (sensor.dataReady()) {
+        int sensorData = sensor.read(false);
+        Serial.write(':');
+        Serial.write(pos);
+        // Serial.write('!');
+        byte first = sensorData >> 8;
+        byte second = sensorData & B11111111;
+        Serial.write(second);
+        Serial.write(first);
+
+        // Serial.print(sensorData);
+        // Serial.print(" first: ");
+        // Serial.print(first);
+        // Serial.print(" second: ");
+        // Serial.print(second);
+        Serial.write('\n');
+
+        if(pos <= 30 || pos >= 150){
+            direction = !direction;
+        }
+        if (direction) {
+            pos += interval;
+        } else {
+            pos -= interval;
+        }
+        pos = constrain(pos, 30, 150);
+
+        myservo.write(pos);
+        // Serial.print("Left: ");
+        // Serial.print(inLeft);
+        // Serial.print("  right: ");
+        // Serial.println(inRight);  
+        
+        // Serial.println(pos);
+
     }
     
-    // TODO: Spin servo
-    // TODO: Send LIDAR data
+    
+    if (lastReceived + 10000 >= now) {
+        // while(1);
+    }
+
 
     delay(5);
 }
