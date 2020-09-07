@@ -10,13 +10,13 @@ class WallFollower(RoboCar):
 
         self.thresholds = [250, 300]
 
-        self.config_sensor(30, 30, 0)
+        self.sensor.config(30, 30, 0)
 
     def run(self):
         while True:
-            self.read_sensors()
-            print(self.sensor_data)
-            distance = self.sensor_data.get(30)
+            self.sensor.read()
+            print(self.sensor.data)
+            distance = self.sensor.data.get(30)
             if distance:
                 error = 0
                 if distance < self.thresholds[0]:
@@ -35,12 +35,12 @@ class WallFollower(RoboCar):
                 # else:
                 #     self.forwards(1.0)
                 if error == 0:
-                    self.forwards(1.0)
+                    self.control.forwards(1.0)
                 elif error > 0:
-                    self.forwards(0.6, curve_right=clamp(num_map(error, 0, 60, 0.2, 0.8), 0.1, 0.8))
+                    self.control.forwards(0.6, curve_right=clamp(num_map(error, 0, 60, 0.2, 0.8), 0.1, 0.8))
                     # self.right(0.5, clamp(num_map(error, 0, 60, 0.05, 0.6), 0.05, 0.6))
                 elif error < 0:
-                    self.forwards(0.6, curve_left=clamp(num_map(error, 0, -60, 0.2, 0.8), 0.1, 0.8))
+                    self.control.forwards(0.6, curve_left=clamp(num_map(error, 0, -60, 0.2, 0.8), 0.1, 0.8))
                     # self.left(0.5, clamp(num_map(error, 0, -60, 0.05, 0.6), 0.05, 0.6))
                 # else:
                 #     self.right_speed = 0.5 * clamp(error * 0.1, -1.0, 1.0)

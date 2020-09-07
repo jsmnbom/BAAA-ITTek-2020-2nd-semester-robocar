@@ -11,11 +11,11 @@ car = None
 def halt():
     print('Stopping car!')
     sleep(0.5)
-    car.stop()
+    car.control.stop()
     sleep(1.0)
-    car.stop()
+    car.control.stop()
     sleep(2.0)
-    car.stop()
+    car.control.stop()
     ser.close()
 
 def main():
