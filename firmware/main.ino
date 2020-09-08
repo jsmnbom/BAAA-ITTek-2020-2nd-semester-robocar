@@ -22,11 +22,14 @@ int pos = 90;
 // True = Right
 // False = Left     
 bool direction = true;
-byte step = 4;
+byte step = 10;
 byte minPos = 30;
-byte maxPos = 150;
+byte maxPos = 60;
 
 unsigned long lastReceived = 0;
+
+unsigned long lastServoWrite = 0;
+int lastPos = 30;
 
 void setup()
 {
@@ -51,12 +54,12 @@ void setup()
     }
 
     // TODO: Consider which distrance mode to use
-    sensor.setDistanceMode(VL53L1X::Medium);
+    sensor.setDistanceMode(VL53L1X::Short);
     // 50000 us (50 ms)
-    sensor.setMeasurementTimingBudget(50000);
+    sensor.setMeasurementTimingBudget(25000);
 
     // Start sensor, read every 50ms
-    sensor.startContinuous(50);
+    sensor.startContinuous(25);
 
     myservo.attach(9);
 }
@@ -126,7 +129,9 @@ void loop()
         lastReceived = now;
     }
 
-    if (sensor.dataReady()) {
+
+
+    if (sensor.dataReady() && lastServoWrite + 3 * abs(pos - lastPos) + 25 < millis()) {
         int sensorData = sensor.read(false);
         Serial.write(':');
         Serial.write(pos);
@@ -142,6 +147,8 @@ void loop()
         // Serial.print(" second: ");
         // Serial.print(second);
         Serial.write('\n');
+
+        lastPos = pos;
 
         if(pos <= minPos || pos >= maxPos){
             direction = !direction;
@@ -161,6 +168,7 @@ void loop()
         
         // Serial.println(pos);
 
+        lastServoWrite = millis();
     }
     
     
