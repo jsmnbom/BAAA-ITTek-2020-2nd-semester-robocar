@@ -1,6 +1,7 @@
-from robocar import RoboCar
 import serial
 import turtle
+
+from . import RoboCar
 
 class VisualizeData(RoboCar):
     def __init__(self, ser: serial.Serial):
@@ -19,11 +20,13 @@ class VisualizeData(RoboCar):
             self.read_sensors()
 
             for pos in range(30, 150):
-                if pos in self.sensor_data:
-                    distance = self.sensor_data[pos]
+                if pos in self.sensor.data:
+                    distance = self.sensor.data.get(pos)
                     self.tur.seth(pos)
                     self.tur.forward(distance)
                     self.tur.backward(distance)
+
+            self.tur.clear()
 
 
 

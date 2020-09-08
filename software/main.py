@@ -1,9 +1,8 @@
 import serial
 from time import sleep
-import atexit
+import atexit 
 
-from wallfollower import WallFollower
-from robocar import RoboCar
+from robocar import WallFollowCar
 
 ser = None
 car = None
@@ -23,7 +22,7 @@ def main():
     ser = serial.Serial('/dev/ttyACM0', baudrate=115200, timeout=0, write_timeout=0)
     
     sleep(2)
-    car = WallFollower(ser)
+    car = WallFollowCar(ser)
     car.run()
 
     # visualize = VisualizeData(ser)

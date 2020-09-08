@@ -1,10 +1,10 @@
 import serial
 from time import sleep
 
-from robocar import RoboCar
-from utils import clamp, num_map
+from . import RoboCar
+from .utils import clamp, num_map
 
-class WallFollower(RoboCar):
+class WallFollowCar(RoboCar):
     def __init__(self, ser: serial.Serial):
         super().__init__(ser)
 

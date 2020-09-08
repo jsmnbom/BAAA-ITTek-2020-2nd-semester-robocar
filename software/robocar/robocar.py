@@ -1,7 +1,7 @@
 from struct import unpack
 import serial
 
-from utils import clamp
+from .utils import clamp
 
 def calc_speed(speed: float):
     """
