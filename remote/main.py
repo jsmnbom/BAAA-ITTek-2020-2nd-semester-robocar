@@ -8,7 +8,10 @@ from pyglet.graphics import Batch
 from pyglet.sprite import Sprite
 from pymunk.vec2d import Vec2d
 
-HOST, PORT = "10.120.0.207", 7070
+# HOST, PORT = "10.120.0.207", 7070
+
+HOST = '127.0.0.1'
+PORT = 65432
 
 SIZE = WIDTH, HEIGHT = (960, 600)
 TPS = 30
@@ -26,7 +29,7 @@ class GameWindow(Window):
 
     def __init__(self, sock, **kwargs):
         super().__init__(**kwargs)
-
+        print('hee')
         self.sock = sock
 
         clock.schedule_interval(self.tick, 1 / TPS)
@@ -48,6 +51,11 @@ class GameWindow(Window):
 
         self.driving = False
 
+        self.x = 0
+        self.y = 0
+        self.speed_forwards = 0
+        self.speed_backwards = 0
+
         # Open controller
         joysticks = pyglet.input.get_joysticks()
         print('joysticks: ', joysticks)
@@ -63,8 +71,8 @@ class GameWindow(Window):
         self.clear()
         self.main_batch.draw()
 
-        if not self.driving:
-            self.sock.sendall(b':' + bytes([0, 0]) + b'\n')
+        # if not self.driving:
+        #     self.sock.sendall(b':' + bytes([0, 0]) + b'\n')
 
     def on_mouse_press(self, x, y, button, modifiers):
         # print('press', x, y, button, modifiers)
@@ -99,19 +107,51 @@ class GameWindow(Window):
         data = [int(clamp((v.angle_degrees + 180.0) / 360.0 * 255.0, 0, 255)),
                 int(clamp(v.length / 100.0 * 255.0, 0, 255))]
         print(data)
-        self.sock.sendall(b':' + bytes(data) + b'\n')
+        # self.sock.sendall(b':' + bytes(data) + b'\n')
+
+    # rz - rght trigger
+    # z - left trigger
+    # rx = -1 - full left
+    # rx = 1 - full right
+    # ry = -1 - full up
+    # ry = 1 - full down
 
     def on_joybutton_press(self, joystick, button):
-        print('joy press', joystick, button)
+        print('joy press', button)
 
     def on_joybutton_release(self, joystick, button):
-        print('joy press', joystick, button)
+        print('joy press', button)
 
     def on_joyaxis_motion(self, joystick, axis, value):
-        print('joy axis motion', joystick, axis, value)
+        # print('joy axis motion', axis, value)
+
+        if axis == 'rz':
+            value =  value / 2 + 0.5
+            self.speed_forwards = value
+            print('speed forwards', value)
+        if axis == 'z':
+            value = value / 2 + 0.5
+            self.speed_backwards = value
+            print('speed backwards', value)
+        if axis == 'ry':
+            self.y = -value
+        if axis == 'rx':
+            self.x = value
+
+        if self.speed_forwards > abs(self.speed_backwards):
+            speed = min(128 + int(128 * self.speed_forwards), 255)
+        else:
+            speed = min(128 + int(128 * -self.speed_backwards), 255)
+
+        angle = Vec2d(self.x,self.y)
+        print('angle', abs(angle.get_angle_degrees()))
+
+        data = [int(abs(angle.get_angle_degrees())), int(speed)]
+
+        self.sock.sendall(b':' + bytes(data) + b'\n')
 
     def on_joyhat_motion(self, joystick, hat_x, hat_y):
-        print('joy hat motion', joystick, hat_x, hat_y)
+        print('joy hat motion', hat_x, hat_y)
 
 
 def clamp(val, min_val, max_val):
@@ -129,8 +169,9 @@ def main():
         pyglet_run()
 
     # game_window = GameWindow(None, width=WIDTH, height=HEIGHT)
-    # # Then start the pyglet event loop
+    # Then start the pyglet event loop
     # pyglet_run()
+    
 
 
 # Call main() if file was run directly
