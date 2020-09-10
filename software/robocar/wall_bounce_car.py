@@ -20,6 +20,7 @@ class WallBounceCar(RoboCar):
 
             # if the wall is closer than threshold
             if a < self.threshold:
+                
                 bl, br = self.sensor.data.get(45), self.sensor.data.get(135)
                 angle = get_angle(a, min(bl, br))
                 if bl > br:
