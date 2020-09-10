@@ -72,17 +72,17 @@ class RemoteCarController(RoboCar):
         print(angle,)
 
         if speed > 128:
-             if angle > 90:
+            if angle > 90:
                 #left
                 self.control.send_speeds(1, num_map(angle, 90, 180, 1, -0.5))
             else:
                 #right
                 self.control.send_speeds(num_map(angle, 0, 90, -0.5, 1), 1)
         else:
-            if angle < -90:
+            if angle > 90:
                 #left
                 self.control.send_speeds(-1, num_map(angle, 180, 90, 0.5, -1))
             else:
                 #right
-                self.control.send_speeds(num_map(angle, 0, -90, 0.5, -1), -1)
+                self.control.send_speeds(num_map(angle, 0, 90, 0.5, -1), -1)
 

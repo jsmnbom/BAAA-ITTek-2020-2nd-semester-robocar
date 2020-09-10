@@ -25,8 +25,8 @@ def main():
     sleep(2)
 
     # wall follow:
-    car = WallFollowCar(ser)
-    car.run()
+    # car = WallFollowCar(ser)
+    # car.run()
 
     # wall bounce:
     # car = WallBounceCar(ser)
