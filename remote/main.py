@@ -1,8 +1,9 @@
 import socket
 
+import pyglet
 from pyglet import clock, resource
 from pyglet.app import run as pyglet_run
-from pyglet.window import Window, FPSDisplay
+from pyglet.window import Window
 from pyglet.graphics import Batch
 from pyglet.sprite import Sprite
 from pymunk.vec2d import Vec2d
@@ -46,6 +47,14 @@ class GameWindow(Window):
         self.small.visible = False
 
         self.driving = False
+
+        # Open controller
+        joysticks = pyglet.input.get_joysticks()
+        print('joysticks: ', joysticks)
+        if joysticks:
+            self.joy = joysticks[0]
+            self.joy.open(self)
+            self.joy.push_handlers(self)
 
     def tick(self, dt: float):
         pass
@@ -92,6 +101,18 @@ class GameWindow(Window):
         print(data)
         self.sock.sendall(b':' + bytes(data) + b'\n')
 
+    def on_joybutton_press(self, joystick, button):
+        print('joy press', joystick, button)
+
+    def on_joybutton_release(self, joystick, button):
+        print('joy press', joystick, button)
+
+    def on_joyaxis_motion(self, joystick, axis, value):
+        print('joy axis motion', joystick, axis, value)
+
+    def on_joyhat_motion(self, joystick, hat_x, hat_y):
+        print('joy hat motion', joystick, hat_x, hat_y)
+
 
 def clamp(val, min_val, max_val):
     return max(min(val, max_val), min_val)
@@ -106,6 +127,10 @@ def main():
         game_window = GameWindow(sock, width=WIDTH, height=HEIGHT)
         # Then start the pyglet event loop
         pyglet_run()
+
+    # game_window = GameWindow(None, width=WIDTH, height=HEIGHT)
+    # # Then start the pyglet event loop
+    # pyglet_run()
 
 
 # Call main() if file was run directly
