@@ -3,7 +3,7 @@ from time import sleep
 import atexit 
 
 from robocar.utils import sleep_degrees
-from robocar import WallFollowCar, WallBounceCar, RemoteCar, RoboCar
+from robocar import WallFollowCar, WallBounceCar, RemoteCar, RoboCar, RemoteCarController
 
 ser = None
 car = None
@@ -35,6 +35,10 @@ def main():
     # remote:
     # car = RemoteCar(ser)
     # car.run()
+
+    # remote:
+    car = RemoteCarController(ser)
+    car.run()
 
     # visualize:
     # visualize = VisualizeData(ser)

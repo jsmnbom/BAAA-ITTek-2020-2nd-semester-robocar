@@ -122,6 +122,7 @@ void loop()
         }
         if (inChar == '\n') {
             inComplete = true;
+            serialFlush();
         }
         if (inBegin) {
             inputBuffer += inChar;
@@ -131,7 +132,7 @@ void loop()
 
     if (sensor.dataReady()) {
     int sensorData = sensor.read(false);
-    if (lastServoWrite + 4 * abs(pos - lastPos) + 25 < millis()) {
+    if (lastServoWrite + 8 * abs(pos - lastPos) + 25 < millis()) {
         Serial.write(':');
         Serial.write(pos);
         // Serial.write('!');
@@ -177,7 +178,13 @@ void loop()
     }
 
 
-    delay(5);
+    //delay(5);
+}
+
+void serialEvent() {
+    if (Serial.available() > 32) {
+        serialFlush();
+    }
 }
 
 void setSpeed(byte pinIn1, byte pinIn2, byte inByte) {
@@ -192,3 +199,9 @@ void setSpeed(byte pinIn1, byte pinIn2, byte inByte) {
         digitalWrite(pinIn2, LOW);
     }
 }
+
+void serialFlush(){
+  while(Serial.available() > 0) {
+    Serial.read();
+  }
+}   
