@@ -21,16 +21,16 @@ def halt():
 
 def main():
     global car, ser
-    ser = serial.Serial('/dev/ttyACM0', baudrate=115200, timeout=0, write_timeout=1)
+    ser = serial.Serial('/dev/ttyACM1', baudrate=115200, timeout=0, write_timeout=1)
     sleep(2)
 
     # wall follow:
-    # car = WallFollowCar(ser)
-    # car.run()
+    car = WallFollowCar(ser)
+    car.run()
 
     # wall bounce:
-    car = WallBounceCar(ser)
-    car.run()
+    # car = WallBounceCar(ser)
+    # car.run()
 
     # remote:
     # car = RemoteCar(ser)

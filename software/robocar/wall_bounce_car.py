@@ -47,14 +47,35 @@ class WallBounceCar(RoboCar):
                     self.angle1 = angle
                     self.control.stop()
                     sleep(0.1)
-                    for i in range(0, step_round(angle * 2, 5), 5):
-                        if bl > br:
-                            self.control.left(0.5, 1.0)
-                        else:
-                            self.control.right(0.5, 1.0)
-                        sleep_degrees(5)
+
+                    start_angle = None
+                    with open('/tmp/angle', 'r') as f:
+                        start_angle = float(f.readline().strip())
+                    if br > bl:
+                        goal_diff = angle * 2
+                    else:
+                        goal_diff = angle * 2
+                    print(start_angle, goal_diff)
+                    needs_overflow = False
+                    
+
+                    while True:
+                        actual_angle = None
+                        with open('/tmp/angle', 'r') as f:
+                            actual_angle = float(f.readline().strip())
+                        print(actual_angle)
+                        
+                        # if bl > br:
+                        #     self.control.left(0.5, 1.0)
+                        # else:
+                        self.control.left(0.5, 1.0)
+                        sleep(0.05)
                         self.control.stop()
-                        sleep(0.2)
+                        sleep(0.1)
+                        diff = min(360-abs(actual_angle - start_angle), abs(actual_angle - start_angle))
+                        print(diff)
+                        if diff > goal_diff:
+                            break
 
                     sleep(0.5)
                     self.sensor.config(90, 90, 0)
