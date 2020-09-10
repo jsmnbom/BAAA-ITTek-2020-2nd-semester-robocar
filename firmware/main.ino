@@ -22,14 +22,14 @@ int pos = 90;
 // True = Right
 // False = Left     
 bool direction = true;
-byte step = 10;
-byte minPos = 30;
-byte maxPos = 60;
+byte step = 0;
+byte minPos = 50;
+byte maxPos = 130;
 
 unsigned long lastReceived = 0;
 
 unsigned long lastServoWrite = 0;
-int lastPos = 30;
+int lastPos = 90;
 
 void setup()
 {
@@ -129,10 +129,9 @@ void loop()
         lastReceived = now;
     }
 
-
-
-    if (sensor.dataReady() && lastServoWrite + 3 * abs(pos - lastPos) + 25 < millis()) {
-        int sensorData = sensor.read(false);
+    if (sensor.dataReady()) {
+    int sensorData = sensor.read(false);
+    if (lastServoWrite + 4 * abs(pos - lastPos) + 25 < millis()) {
         Serial.write(':');
         Serial.write(pos);
         // Serial.write('!');
@@ -169,6 +168,7 @@ void loop()
         // Serial.println(pos);
 
         lastServoWrite = millis();
+    }
     }
     
     
