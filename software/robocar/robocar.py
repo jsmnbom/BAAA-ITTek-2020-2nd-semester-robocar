@@ -25,7 +25,12 @@ class Control:
             calc_speed(clamp(right, -1.0, 1.0))
         ]
         print("Sending speeds:", data)
-        self._ser.write(b':d' + bytes(data) + b'\n')
+        self._ser.flushOutput()
+        try:
+            self._ser.write(b':d' + bytes(data) + b'\n')
+        except Exception as e:
+            print("ignoring: ", e)
+            pass
 
     def left(self, speed: float, strength: float):
         # right_speed < left_speed
@@ -36,6 +41,7 @@ class Control:
         self.send_speeds(-clamp(strength, 0.0, 1.0) * clamp(speed, -1.0, 1.0), clamp(strength, 0.0, 1.0) * clamp(speed, -1.0, 1.0))
 
     def forwards(self, speed, curve_left=0.0, curve_right=0.0):
+        print(f'{speed} left {curve_left} right {curve_right}')
         right = clamp(speed, 0.0, 1.0)
         left = clamp(speed, 0.0, 1.0)
         if curve_left > 0.0:
